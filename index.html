@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OURCHAT</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #eef2ff;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 500px;
+      margin: auto;
+      min-height: 100vh;
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: white;
+      padding: 28px 20px 24px;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .tagline {
+      opacity: .9;
+      font-size: 14px;
+    }
+
+    .search {
+      margin: 18px;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid #ddd;
+      border-radius: 30px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .section-title {
+      padding: 0 18px;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      padding: 70px 25px;
+      line-height: 1.6;
+    }
+
+    .friend {
+      margin: 12px 18px;
+      padding: 15px;
+      border-radius: 15px;
+      background: #f5f7ff;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .friend-name {
+      font-weight: bold;
+    }
+
+    .status {
+      color: #888;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .add-btn {
+      position: fixed;
+      right: 25px;
+      bottom: 25px;
+      width: 62px;
+      height: 62px;
+      border: none;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      font-size: 32px;
+      box-shadow: 0 8px 25px #0003;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0007;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 25px;
+    }
+
+    .modal-box h2 {
+      margin-bottom: 18px;
+    }
+
+    .modal-box input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .modal-box button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .close {
+      background: #eee !important;
+      color: #333 !important;
+      margin-top: 8px;
+    }
+  </style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+</head>
+
+<body>
+
+  <!-- OURCHAT AUTH SCREEN -->
+<div id="authScreen" style="
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+  background:linear-gradient(135deg,#2563eb,#4f46e5);
+">
+  <div style="
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:30px 24px;
+    border-radius:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.2);
+  ">
+
+    <div style="text-align:center;margin-bottom:25px;">
+      <div style="
+        font-size:34px;
+        font-weight:bold;
+        color:#2563eb;
+        margin-bottom:8px;
+      ">OURCHAT</div>
+
+      <div style="color:#777;font-size:15px;">
+        Connect. Chat. Stay close.
+      </div>
+    </div>
+
+    <h2 id="authTitle" style="
+      text-align:center;
+      margin-bottom:20px;
+    ">Create Account</h2>
+
+    <input
+      id="authName"
+      type="text"
+      placeholder="Your name"
+      style="
+        width:100%;
+        padding:15px;
+        margin-bottom:12px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        font-size:16px;
+      "
+    >
+
+    <input
+      id="authEmail"
+      type="email"
+      placeholder="Email address"
+      style="
+        width:100%;
+        padding:15px;
+        margin-bottom:12px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        font-size:16px;
+      "
+    >
+
+    <input
+      id="authPassword"
+      type="password"
+      placeholder="Password"
+      style="
+        width:100%;
+        padding:15px;
+        margin-bottom:15px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        font-size:16px;
+      "
+    >
+
+    <button
+      id="authButton"
+      onclick="handleAuth()"
+      style="
+        width:100%;
+        padding:15px;
+        border:none;
+        border-radius:12px;
+        background:#2563eb;
+        color:white;
+        font-size:17px;
+        font-weight:bold;
+      "
+    >Create Account</button>
+
+    <div style="
+      text-align:center;
+      margin-top:18px;
+      color:#666;
+    ">
+      <span id="authSwitchText">Already have an account?</span>
+
+      <button
+        onclick="toggleAuthMode()"
+        id="authSwitchButton"
+        style="
+          border:none;
+          background:none;
+          color:#2563eb;
+          font-weight:bold;
+          font-size:15px;
+        "
+      >Login</button>
+    </div>
+
+    <div
+      id="authMessage"
+      style="
+        text-align:center;
+        margin-top:15px;
+        color:#e11d48;
+        font-size:14px;
+      "
+    ></div>
+
+  </div>
+</div>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">OURCHAT</div>
+    <div class="tagline">Connect. Chat. Stay close.</div>
+  </div>
+
+  <div class="search">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search friends..."
+      onkeyup="searchFriends()"
+    >
+  </div>
+
+  <div class="section-title">Friends</div>
+
+  <div id="friendsList">
+    <div class="empty" id="emptyMessage">
+      No friends yet.<br>
+      Tap + to add a friend.
+    </div>
+  </div>
+
+</div>
+
+<button class="add-btn" onclick="openModal()">+</button>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h2>Add a friend</h2>
+
+    <input
+      type="text"
+      id="friendName"
+      placeholder="Friend's name"
+    >
+
+    <button onclick="addFriend()">Add Friend</button>
+
+    <button class="close" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script type="module">
+
+  /*
+   ==================================================
+   OURCHAT FIREBASE CONFIGURATION
+   ==================================================
+
+   Replace the object below with the Firebase
+   configuration you copied from Firebase Console.
+  */
+
+  
+  
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAFAW1vAThYDN9N4ghuBW91q3IlkDwhrJQ",
+    authDomain: "ourchat-d0382.firebaseapp.com",
+    projectId: "ourchat-d0382",
+    storageBucket: "ourchat-d0382.firebasestorage.app",
+    messagingSenderId: "82519356076",
+    appId: "1:82519356076:web:6be266eb24ac654940a509",
+    measurementId: "G-9Q5FJG4YB7"
+  };
+
+  // Initialize Firebase
+  window.ourchatApp = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(window.ourchatApp);
+
+  
+
+  console.log("OURCHAT started successfully!");
+
+</script>
+<script type="module">
+  import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+  const auth = getAuth(window.ourchatApp);
+const db = getFirestore(window.ourchatApp);
+  let loginMode = false;
+
+  window.toggleAuthMode = function () {
+    loginMode = !loginMode;
+
+    document.getElementById("authTitle").textContent =
+      loginMode ? "Welcome Back" : "Create Account";
+
+    document.getElementById("authButton").textContent =
+      loginMode ? "Login" : "Create Account";
+
+    document.getElementById("authSwitchText").textContent =
+      loginMode ? "Don't have an account?" : "Already have an account?";
+
+    document.getElementById("authSwitchButton").textContent =
+      loginMode ? "Sign Up" : "Login";
+
+    document.getElementById("authName").style.display =
+      loginMode ? "none" : "block";
+
+    document.getElementById("authMessage").textContent = "";
+  };
+
+  window.handleAuth = async function () {
+    const name = document.getElementById("authName").value.trim();
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value;
+
+    const message = document.getElementById("authMessage");
+    message.textContent = "";
+
+    if (!email || !password || (!loginMode && !name)) {
+      message.textContent = "Please fill in all required fields.";
+      return;
+    }
+
+    try {
+      if (loginMode) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        const result = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        await updateProfile(result.user, {
+          displayName: name
+        });
+      }
+    } catch (error) {
+      message.textContent = error.message;
+    }
+  };
+
+  onAuthStateChanged(auth, (user) => {
+    const authScreen = document.getElementById("authScreen");
+    const appScreen = document.querySelector(".app");
+
+    if (user) {
+      authScreen.style.display = "none";
+      appScreen.style.display = "block";
+    } else {
+      authScreen.style.display = "flex";
+      appScreen.style.display = "none";
+    }
+  });
+</script>
+<script>
+
+  let friends = [];
+
+  function openModal() {
+    document.getElementById("modal").style.display = "flex";
+    document.getElementById("friendName").focus();
+  }
+
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("friendName").value = "";
+  }
+
+  function addFriend() {
+
+    const input = document.getElementById("friendName");
+    const name = input.value.trim();
+
+    if (name === "") {
+      alert("Please enter your friend's name.");
+      return;
+    }
+
+    friends.push(name);
+
+    displayFriends();
+
+    closeModal();
+  }
+
+  function displayFriends() {
+
+    const list = document.getElementById("friendsList");
+
+    if (friends.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          No friends yet.<br>
+          Tap + to add a friend.
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = "";
+
+    friends.forEach((name) => {
+
+      const firstLetter = name.charAt(0).toUpperCase();
+
+      list.innerHTML += `
+        <div class="friend" onclick="openChat('${name.replace(/'/g, "\\'")}')">
+
+          <div class="avatar">
+            ${firstLetter}
+          </div>
+
+          <div>
+            <div class="friend-name">${name}</div>
+            <div class="status">Tap to chat</div>
+          </div>
+
+        </div>
+      `;
+    });
+  }
+
+  function searchFriends() {
+
+    const search = document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+    const friendElements =
+      document.querySelectorAll(".friend");
+
+    friendElements.forEach(friend => {
+
+      const name =
+        friend.querySelector(".friend-name")
+        .textContent
+        .toLowerCase();
+
+      friend.style.display =
+        name.includes(search) ? "flex" : "none";
+    });
+  }
+
+  function openChat(name) {
+    alert("Chat with " + name + " will be added next! 💬");
+  }
+
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js")
+    .then(() => console.log("OURCHAT service worker registered"))
+    .catch((error) => console.error("Service worker error:", error));
+}
+</script>
+</body>
+</html>
